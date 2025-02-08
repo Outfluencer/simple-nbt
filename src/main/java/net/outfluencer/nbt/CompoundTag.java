@@ -31,6 +31,7 @@ public class CompoundTag implements Tag {
             }
         }
         limiter.pop();
+        value = map;
     }
 
     private String readString(DataInput input, NbtLimiter limiter) throws IOException {
