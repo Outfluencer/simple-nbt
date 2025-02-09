@@ -17,7 +17,7 @@ public class ShortTag implements Tag {
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(10L);
+        limiter.countBytes(OBJECT_HEADER + Short.BYTES);
         value = input.readShort();
     }
 

@@ -17,7 +17,7 @@ public class LongTag implements Tag {
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(16L);
+        limiter.countBytes(OBJECT_HEADER + Long.BYTES);
         value = input.readLong();
     }
 

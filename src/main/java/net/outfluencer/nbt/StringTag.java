@@ -17,9 +17,9 @@ public class StringTag implements Tag {
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(36L);
+        limiter.countBytes(OBJECT_HEADER + STRING_SIZE);
         String string = input.readUTF();
-        limiter.countBytes(2L, string.length());
+        limiter.countBytes(string.length(), Character.BYTES);
         value = string;
     }
 

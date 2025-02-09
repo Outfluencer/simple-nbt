@@ -17,7 +17,7 @@ public class FloatTag implements Tag {
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(12L);
+        limiter.countBytes(OBJECT_HEADER + Float.BYTES);
         value = input.readFloat();
     }
 

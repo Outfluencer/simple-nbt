@@ -17,9 +17,9 @@ public class IntArrayTag implements Tag {
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(24L);
+        limiter.countBytes(OBJECT_HEADER + ARRAY_HEADER + Integer.BYTES);
         int length = input.readInt();
-        limiter.countBytes(length, 4L);
+        limiter.countBytes(length, Integer.BYTES);
         int[] data = new int[length];
         for (int i = 0; i < length; i++) {
             data[i] = input.readInt();

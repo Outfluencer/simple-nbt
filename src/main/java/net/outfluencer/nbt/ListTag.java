@@ -15,13 +15,19 @@ import java.util.List;
 @AllArgsConstructor
 public class ListTag implements Tag {
 
+    public static final int LIST_HEADER = 12;
+
     private List<Tag> value;
     private byte listType;
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
         limiter.push();
-        limiter.countBytes(37L);
+        // I have no idea how we get to 37, maybe they add another 12 bytes for List object overhead
+        // int headers = OBJECT_HEADER + ARRAY_HEADER; // 20
+        // int withRead = headers + Byte.BYTES + Integer.BYTES; // 25
+        // wea are off by 12 bytes but idk why mojang is counting these 12 bytes
+        limiter.countBytes(OBJECT_HEADER + LIST_HEADER + ARRAY_HEADER + Byte.BYTES + Integer.BYTES);
         listType = input.readByte();
         int length = input.readInt();
 
@@ -29,7 +35,7 @@ public class ListTag implements Tag {
             throw new NbtFormatException("Missing type in ListTag");
         }
 
-        limiter.countBytes(length, 4L);
+        limiter.countBytes(length, OBJECT_REFERENCE);
         List<Tag> tagList = new ArrayList<>(length);
         for (int i = 0; i < length; i++) {
             tagList.add(Tag.readById(listType, input, limiter));
@@ -41,7 +47,10 @@ public class ListTag implements Tag {
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeByte(getListType());
+        if (listType == Tag.END && !value.isEmpty()) {
+            throw new NbtFormatException("Missing type in ListTag");
+        }
+        output.writeByte(listType);
         output.writeInt(value.size());
         for (Tag tag : value) {
             if (tag.getId() != listType) {

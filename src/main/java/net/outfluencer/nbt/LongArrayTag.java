@@ -17,9 +17,9 @@ public class LongArrayTag implements Tag {
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(24L);
+        limiter.countBytes(OBJECT_HEADER + ARRAY_HEADER + Integer.BYTES);
         int length = input.readInt();
-        limiter.countBytes(length, 8L);
+        limiter.countBytes(length, Long.BYTES);
         long[] data = new long[length];
         for (int i = 0; i < length; i++) {
             data[i] = input.readLong();

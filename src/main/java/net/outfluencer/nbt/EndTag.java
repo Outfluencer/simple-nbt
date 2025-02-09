@@ -15,7 +15,7 @@ public class EndTag implements Tag {
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(8L);
+        limiter.countBytes(OBJECT_HEADER);
     }
 
     @Override

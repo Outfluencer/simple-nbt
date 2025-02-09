@@ -9,35 +9,32 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompoundTag implements Tag {
 
+    private static final int MAP_SIZE_IN_BYTES = 48;
+    private static final int MAP_ENTRY_SIZE_IN_BYTES = 32;
+
     private Map<String, Tag> value;
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
         limiter.push();
-        limiter.countBytes(48L);
+        limiter.countBytes(MAP_SIZE_IN_BYTES);
         Map<String, Tag> map = new HashMap<>();
-        for (byte type; (type = input.readByte()) != 0; ) {
+        for (byte type; (type = input.readByte()) != Tag.END; ) {
             String name = readString(input, limiter);
             Tag tag = Tag.readById(type, input, limiter);
             if (map.put(name, tag) == null) {
-                limiter.countBytes(36L);
+                limiter.countBytes(MAP_ENTRY_SIZE_IN_BYTES + OBJECT_REFERENCE);
             }
         }
         limiter.pop();
         value = map;
-    }
-
-    private String readString(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(28L);
-        String string = input.readUTF();
-        limiter.countBytes(string.length(), 2);
-        return string;
     }
 
     @Override
@@ -46,10 +43,11 @@ public class CompoundTag implements Tag {
             String name = entry.getKey();
             Tag tag = entry.getValue();
             output.writeByte(tag.getId());
-            if (tag.getId() != 0) {
-                output.writeUTF(name);
-                tag.write(output);
+            if (tag.getId() == Tag.END) {
+                throw new NbtFormatException("invalid end tag in compound tag");
             }
+            writeString(name, output);
+            tag.write(output);
         }
         output.writeByte(0);
     }
@@ -57,5 +55,16 @@ public class CompoundTag implements Tag {
     @Override
     public byte getId() {
         return Tag.COMPOUND;
+    }
+
+    static String readString(DataInput input, NbtLimiter limiter) throws IOException {
+        limiter.countBytes(STRING_SIZE);
+        String string = input.readUTF();
+        limiter.countBytes(string.length(), Character.BYTES);
+        return string;
+    }
+
+    static void writeString(String string, DataOutput output) throws IOException {
+        output.writeUTF(string);
     }
 }
