@@ -37,16 +37,39 @@ public interface Tag {
     byte INT_ARRAY = 11;
     byte LONG_ARRAY = 12;
 
+    /**
+     * Reads the data into this tag
+     * @param input the input to read from
+     * @param limiter the limiter for this read operation
+     */
     void read(DataInput input, NbtLimiter limiter) throws IOException;
 
+    /**
+     * Writes this tag into a {@link DataOutput}
+     * @param output the output to write to
+     */
     void write(DataOutput output) throws IOException;
 
+    /**
+     * Gets the id of this tags type
+     * @return the id related to this tags type
+     */
     byte getId();
 
-    static Tag createTag(byte id) {
+    /**
+     * Reads the data of the {@link DataInput} and parses it into a {@link Tag}
+     *
+     * @param id the nbt type
+     * @param input input to read from
+     * @param limiter limitation of the read data
+     * @return the initialized {@link Tag}
+     */
+    static Tag readById(byte id, DataInput input, NbtLimiter limiter) throws IOException {
         if (id < END || id > LONG_ARRAY) {
             throw new NbtFormatException("Invalid tag id: " + id);
         }
-        return CONSTRUCTORS[id].get();
+        Tag tag = CONSTRUCTORS[id].get();
+        tag.read(input, limiter);
+        return tag;
     }
 }

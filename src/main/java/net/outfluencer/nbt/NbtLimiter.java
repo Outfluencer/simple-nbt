@@ -10,6 +10,10 @@ public class NbtLimiter {
     private final long maxBytes;
     private final int maxDepth;
 
+    public static NbtLimiter unlimitedSize() {
+        return new NbtLimiter(Long.MAX_VALUE, MAX_STACK_DEPTH);
+    }
+
     public NbtLimiter(long maxBytes) {
         this(maxBytes, MAX_STACK_DEPTH);
     }

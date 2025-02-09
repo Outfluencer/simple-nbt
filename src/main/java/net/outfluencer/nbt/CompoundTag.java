@@ -23,10 +23,9 @@ public class CompoundTag implements Tag {
         limiter.countBytes(48L);
         Map<String, Tag> map = new HashMap<>();
         for (byte type; (type = input.readByte()) != 0; ) {
-            String string = readString(input, limiter);
-            Tag tag = Tag.createTag(type);
-            tag.read(input, limiter);
-            if (map.put(string, tag) == null) {
+            String name = readString(input, limiter);
+            Tag tag = Tag.readById(type, input, limiter);
+            if (map.put(name, tag) == null) {
                 limiter.countBytes(36L);
             }
         }

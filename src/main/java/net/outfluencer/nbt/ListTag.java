@@ -32,9 +32,7 @@ public class ListTag implements Tag {
         limiter.countBytes(length, 4L);
         List<Tag> tagList = new ArrayList<>(length);
         for (int i = 0; i < length; i++) {
-            Tag tag = Tag.createTag(listType);
-            tag.read(input, limiter);
-            tagList.add(tag);
+            tagList.add(Tag.readById(listType, input, limiter));
         }
         limiter.pop();
 
