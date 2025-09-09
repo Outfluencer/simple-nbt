@@ -17,15 +17,12 @@ public class StringTag implements Tag {
 
     @Override
     public void read(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(OBJECT_HEADER + STRING_SIZE);
-        String string = input.readUTF();
-        limiter.countBytes(string.length(), Character.BYTES);
-        value = string;
+        value = StringUtils.readTagValue(input, limiter);
     }
 
     @Override
     public void write(DataOutput output) throws IOException {
-        output.writeUTF(value);
+        StringUtils.writeString(value, output);
     }
 
     @Override

@@ -26,7 +26,7 @@ public class NamedTag {
      */
     public static NamedTag read(@NonNull DataInput input, @NonNull NbtLimiter limiter) throws IOException {
         byte type = input.readByte();
-        return new NamedTag(CompoundTag.readString(input, limiter), Tag.readById(type, input, limiter));
+        return new NamedTag(StringUtils.readTagName(input, limiter), Tag.readById(type, input, limiter));
     }
 
     /**
@@ -36,7 +36,7 @@ public class NamedTag {
      */
     public static void write(NamedTag tag, DataOutput output) throws IOException {
         output.writeByte(tag.getTag().getId());
-        CompoundTag.writeString(tag.getName(), output);
+        StringUtils.writeString(tag.getName(), output);
         tag.tag.write(output);
     }
 }
