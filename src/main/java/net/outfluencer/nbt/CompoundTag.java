@@ -27,7 +27,7 @@ public class CompoundTag implements Tag {
         limiter.countBytes(MAP_SIZE_IN_BYTES);
         Map<String, Tag> map = new HashMap<>();
         for (byte type; (type = input.readByte()) != Tag.END; ) {
-            String name = readString(input, limiter);
+            String name = StringUtils.readTagName(input, limiter);
             Tag tag = Tag.readById(type, input, limiter);
             if (map.put(name, tag) == null) {
                 limiter.countBytes(MAP_ENTRY_SIZE_IN_BYTES + OBJECT_REFERENCE);
@@ -46,7 +46,7 @@ public class CompoundTag implements Tag {
             if (tag.getId() == Tag.END) {
                 throw new NbtFormatException("invalid end tag in compound tag");
             }
-            writeString(name, output);
+            StringUtils.writeString(name, output);
             tag.write(output);
         }
         output.writeByte(0);
@@ -55,16 +55,5 @@ public class CompoundTag implements Tag {
     @Override
     public byte getId() {
         return Tag.COMPOUND;
-    }
-
-    static String readString(DataInput input, NbtLimiter limiter) throws IOException {
-        limiter.countBytes(STRING_SIZE);
-        String string = input.readUTF();
-        limiter.countBytes(string.length(), Character.BYTES);
-        return string;
-    }
-
-    static void writeString(String string, DataOutput output) throws IOException {
-        output.writeUTF(string);
     }
 }

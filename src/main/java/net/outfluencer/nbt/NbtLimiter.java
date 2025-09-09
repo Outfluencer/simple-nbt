@@ -26,7 +26,7 @@ public class NbtLimiter {
             throw new NbtLimitException("NBT limiter tried to count negative byte amount");
         }
         if (usedBytes > (usedBytes = Math.addExact(usedBytes, amount))) {
-            throw new NbtLimitException("NBT tag is to big, bytes > " + maxBytes);
+            throw new NbtLimitException("NBT tag is too big, bytes > " + maxBytes);
         }
     }
 
@@ -39,7 +39,7 @@ public class NbtLimiter {
 
     public void push() {
         if ((depth = Math.addExact(depth, 1)) > maxDepth) {
-            throw new NbtLimitException("NBT tag is to complex, depth > " + maxDepth);
+            throw new NbtLimitException("NBT tag is too complex, depth > " + maxDepth);
         }
     }
 

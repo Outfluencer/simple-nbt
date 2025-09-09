@@ -10,6 +10,7 @@ public interface Tag {
     int STRING_SIZE = 28;
     int OBJECT_REFERENCE = 4;
 
+    @SuppressWarnings("unchecked")
     Supplier<? extends Tag>[] CONSTRUCTORS = new Supplier[]{
             EndTag::new,
             ByteTag::new,
